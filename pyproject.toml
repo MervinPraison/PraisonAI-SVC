@@ -1,0 +1,88 @@
+[project]
+name = "praisonai-svc"
+version = "1.0.0"
+description = "A unified framework that turns any PraisonAI Python package into a web service on Azure"
+readme = "README.md"
+authors = [
+    { name = "MervinPraison"}
+]
+requires-python = ">=3.11"
+license = { text = "MIT" }
+keywords = ["praisonai", "azure", "fastapi", "microservices", "serverless"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Framework :: FastAPI",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.6.0",
+    "azure-storage-blob>=12.23.0",
+    "azure-storage-queue>=12.12.0",
+    "azure-data-tables>=12.6.0",
+    "azure-identity>=1.19.0",
+    "pyyaml>=6.0.2",
+    "click>=8.1.7",
+    "tenacity>=9.0.0",
+    "python-multipart>=0.0.12",
+    "httpx>=0.27.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=6.0.0",
+    "black>=24.10.0",
+    "ruff>=0.7.0",
+    "mypy>=1.13.0",
+]
+
+[project.scripts]
+praisonai-svc = "praisonai_svc.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/praisonai/praisonai-svc"
+Documentation = "https://docs.praisonai.com/svc"
+Repository = "https://github.com/praisonai/praisonai-svc"
+Issues = "https://github.com/praisonai/praisonai-svc/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/praisonai_svc"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"

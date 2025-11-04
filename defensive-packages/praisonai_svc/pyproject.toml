@@ -1,0 +1,19 @@
+[project]
+name = "praisonai_svc"
+version = "0.0.1"
+description = "⚠️ TYPO - Install 'praisonai-svc' instead"
+readme = "README.md"
+authors = [
+    { name = "MervinPraison" }
+]
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = ["praisonai-svc>=1.0.0"]
+
+[project.urls]
+Homepage = "https://github.com/praisonai/praisonai-svc"
+Repository = "https://github.com/praisonai/praisonai-svc"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
