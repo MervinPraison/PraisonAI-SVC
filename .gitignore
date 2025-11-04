@@ -104,3 +104,12 @@ handlers.pyc
 
 AzuriteConfig
 __azurite_db_*.json
+__queuestorage__
+__blobstorage__
+__tablestorage__
+__queueextent__
+__tableextent__
+__blobextent__
+__queueextent__
+__tableextent__
+__blobextent__
