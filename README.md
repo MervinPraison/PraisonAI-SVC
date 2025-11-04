@@ -26,35 +26,38 @@ pip install praisonai-svc
 ### Create a New Service
 
 ```bash
-praisonai-svc new my-service --package praisonaippt
+praisonai-svc new my-service
 cd my-service
 ```
 
 ### Implement Your Handler
 
-Edit `handlers.py`:
+Edit `handlers.py` - replace the `NotImplementedError` with your logic:
 
 ```python
-import io
+from dotenv import load_dotenv
 from praisonai_svc import ServiceApp
-from praisonaippt import build_ppt
 
-app = ServiceApp("PraisonAI PPT")
+# Load environment variables from .env file
+load_dotenv()
+
+app = ServiceApp("My Service")
 
 @app.job
-def generate_ppt(payload: dict) -> tuple[bytes, str, str]:
-    """Generate PowerPoint from YAML."""
-    buf = io.BytesIO()
-    build_ppt(payload, out=buf)
+def process_job(payload: dict) -> tuple[bytes, str, str]:
+    """Process job and return file data."""
+    # Your processing logic here
+    title = payload.get('title', 'Untitled')
+    content = f"Processed: {title}\n\nFull payload:\n{payload}"
+    
     return (
-        buf.getvalue(),
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        "slides.pptx",
+        content.encode(),  # File content as bytes
+        "text/plain",      # Content type
+        "result.txt"       # Filename
     )
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app.get_app(), host="0.0.0.0", port=8080)
+    app.run(host="0.0.0.0", port=8080)
 ```
 
 ### Configure Environment
@@ -78,13 +81,16 @@ python handlers.py
 # Create a job
 curl -X POST http://localhost:8080/jobs \
   -H "Content-Type: application/json" \
-  -d '{"payload": {"title": "My Presentation"}}'
+  -d '{"payload": {"title": "My First Job", "data": "test"}}'
 
-# Check job status
+# Check job status (replace {job_id} with actual ID from response)
 curl http://localhost:8080/jobs/{job_id}
 
-# Download result
+# Get download URL
 curl http://localhost:8080/jobs/{job_id}/download
+
+# Download the result file
+curl "$(curl -s http://localhost:8080/jobs/{job_id}/download | jq -r .download_url)"
 ```
 
 ## Local Testing

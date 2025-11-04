@@ -81,14 +81,15 @@ def process_job(payload: dict) -> tuple[bytes, str, str]:
     Returns:
         tuple of (file_data, content_type, filename)
     """
-    # TODO: Implement your job processing logic here
-    # Example:
-    # from {package or "your_package"} import build_output
-    # buf = io.BytesIO()
-    # build_output(payload, out=buf)
-    # return buf.getvalue(), "application/octet-stream", "output.bin"
-
-    raise NotImplementedError("Job handler not implemented")
+    # Simple example - replace with your actual processing logic
+    title = payload.get('title', 'Untitled')
+    content = f"Processed: {{title}}\\n\\nFull payload:\\n{{payload}}"
+    
+    return (
+        content.encode(),  # File content as bytes
+        "text/plain",      # Content type
+        "result.txt"       # Filename
+    )
 
 
 if __name__ == "__main__":

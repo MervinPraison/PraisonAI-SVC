@@ -100,3 +100,7 @@ handlers.pyc
 *.db
 
 .vscode
+
+
+AzuriteConfig
+__azurite_db_*.json
