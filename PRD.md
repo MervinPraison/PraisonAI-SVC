@@ -120,13 +120,12 @@ setup(
     pip install praisonai-svc
     ```
     
-    See: https://github.com/praisonai/praisonai-svc
+    See: https://github.com/MervinPraison/PraisonAI-SVC
     """,
     long_description_content_type="text/markdown",
     install_requires=["praisonai-svc>=1.0.0"],  # Auto-installs correct package
-    author="PraisonAI Team",
-    author_email="security@praisonai.com",
-    url="https://github.com/praisonai/praisonai-svc",
+    author="MervinPraison",
+    url="https://github.com/MervinPraison/PraisonAI-SVC",
     classifiers=[
         "Development Status :: 1 - Planning",
         "Intended Audience :: Developers",
@@ -169,7 +168,7 @@ We maintain defensive packages for common typos:
 - `praisonai-service` → redirects to `praisonai-svc`
 
 ### Report Security Issues
-Email: security@praisonai.com
+GitHub Issues: https://github.com/MervinPraison/PraisonAI-SVC/issues
 ```
 
 **Maintenance:**

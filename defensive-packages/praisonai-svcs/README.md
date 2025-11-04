@@ -19,10 +19,10 @@ If you installed this by mistake, the correct package (`praisonai-svc`) has been
 ## Official Package
 
 - **Correct name:** `praisonai-svc`
-- **Repository:** https://github.com/praisonai/praisonai-svc
-- **Documentation:** https://docs.praisonai.com/svc
+- **Repository:** https://github.com/MervinPraison/PraisonAI-SVC
+- **Documentation:** https://mervinpraison.github.io/PraisonAI-SVC
 
 ## Report Issues
 
 If you believe this is a security issue, please report it:
-- GitHub: https://github.com/praisonai/praisonai-svc/issues
+- GitHub: https://github.com/MervinPraison/PraisonAI-SVC/issues

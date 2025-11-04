@@ -144,7 +144,7 @@ PRAISONAI_MAX_RETRY_COUNT=3
 
 ### Azure Container Apps
 
-See [deployment guide](https://github.com/praisonai/praisonai-svc/blob/main/docs/deployment.md) for full instructions.
+See [deployment guide](https://github.com/MervinPraison/PraisonAI-SVC/blob/main/docs/deployment.md) for full instructions.
 
 Quick deploy:
 
@@ -178,20 +178,20 @@ pip install praisonai-svc
 
 ### Typosquatting Protection
 
-We maintain defensive packages for common typos:
-- `praisonaisvc` → redirects to `praisonai-svc`
-- `praisonai_svc` → redirects to `praisonai-svc`
-- `praisonai-service` → redirects to `praisonai-svc`
+We maintain a defensive package for common typo:
+- `praisonai-svcs` (plural) → redirects to `praisonai-svc`
+
+PyPI's built-in name similarity protection prevents other typosquatting attempts.
 
 ### Report Security Issues
 
-Email: security@praisonai.com
+GitHub Issues: https://github.com/MervinPraison/PraisonAI-SVC/issues
 
 ## Development
 
 ```bash
 # Clone repository
-git clone https://github.com/praisonai/praisonai-svc.git
+git clone https://github.com/MervinPraison/PraisonAI-SVC.git
 cd praisonai-svc
 
 # Install with dev dependencies
@@ -208,20 +208,80 @@ ruff check src/ --fix
 mypy src/
 ```
 
+## Project Structure
+
+```
+praisonai-svc/
+├── src/praisonai_svc/          # Main package
+│   ├── __init__.py             # Package exports
+│   ├── app.py                  # ServiceApp class
+│   ├── worker.py               # Worker with exponential backoff
+│   ├── cli.py                  # CLI commands
+│   ├── models/                 # Data models
+│   └── azure/                  # Azure integrations
+├── tests/                      # Test suite (20 tests)
+├── examples/                   # Example services
+├── defensive-packages/         # Typosquatting protection
+├── pyproject.toml              # Package configuration
+├── Dockerfile                  # Container image
+└── LICENSE                     # MIT License
+```
+
+## Key Features
+
+### Core Framework
+- **ServiceApp class** - FastAPI app factory
+- **@app.job decorator** - Simple handler registration
+- **Automatic API generation** - 4 endpoints created automatically
+- **CORS middleware** - Configurable cross-origin support
+- **Idempotency** - SHA256 JobHash prevents duplicate processing
+
+### Azure Integration
+- **Blob Storage** - File storage with retry logic (3 attempts)
+- **Queue Storage** - Job queue with poison queue for failures
+- **Table Storage** - Job state tracking with retry logic
+- **SAS URLs** - On-demand secure download links (1h expiry)
+
+### Reliability
+- **Exponential backoff** - Worker polling (1s → 30s)
+- **Retry logic** - Max 3 attempts before poison queue
+- **Timeout detection** - 10 minute job timeout
+- **Error handling** - Comprehensive error messages
+
+### CLI Commands
+
+```bash
+praisonai-svc new <name>      # Create new service
+praisonai-svc run              # Run locally
+praisonai-svc deploy           # Deploy to Azure
+praisonai-svc logs             # Tail logs
+```
+
+## Testing
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=praisonai_svc
+
+# Run specific test file
+pytest tests/test_integration.py -v
+```
+
+**Test Results:** 20/20 tests passing ✅
+
 ## Examples
 
-See [examples/](./examples/) directory for complete service implementations:
-
-- `examples/ppt-service/` - PowerPoint generation
-- `examples/video-service/` - Video generation
-- `examples/wp-service/` - WordPress content generation
+See [examples/](./examples/) directory:
+- `examples/ppt-service/` - PowerPoint generation example
 
 ## Documentation
 
-- [Full Documentation](https://docs.praisonai.com/svc)
-- [API Reference](https://docs.praisonai.com/svc/api)
-- [Deployment Guide](https://docs.praisonai.com/svc/deployment)
-- [PRD](./PRD.md)
+- [PRD](./PRD.md) - Complete product requirements
+- GitHub: https://github.com/MervinPraison/PraisonAI-SVC
+- Issues: https://github.com/MervinPraison/PraisonAI-SVC/issues
 
 ## License
 
@@ -233,6 +293,6 @@ Contributions welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ## Support
 
-- GitHub Issues: https://github.com/praisonai/praisonai-svc/issues
-- Documentation: https://docs.praisonai.com/svc
-- Email: support@praisonai.com
+- GitHub Issues: https://github.com/MervinPraison/PraisonAI-SVC/issues
+- Documentation: https://mervinpraison.github.io/PraisonAI-SVC
+- Website: https://praison.ai

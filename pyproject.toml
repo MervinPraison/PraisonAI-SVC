@@ -7,7 +7,7 @@ authors = [
     { name = "MervinPraison"}
 ]
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license = "MIT"
 keywords = ["praisonai", "azure", "fastapi", "microservices", "serverless"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -50,10 +50,10 @@ dev = [
 praisonai-svc = "praisonai_svc.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/praisonai/praisonai-svc"
-Documentation = "https://docs.praisonai.com/svc"
-Repository = "https://github.com/praisonai/praisonai-svc"
-Issues = "https://github.com/praisonai/praisonai-svc/issues"
+Homepage = "https://praison.ai"
+Documentation = "https://mervinpraison.github.io/PraisonAI-SVC"
+Repository = "https://github.com/MervinPraison/PraisonAI-SVC"
+Issues = "https://github.com/MervinPraison/PraisonAI-SVC/issues"
 
 [build-system]
 requires = ["hatchling"]

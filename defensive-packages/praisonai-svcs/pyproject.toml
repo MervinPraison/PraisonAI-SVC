@@ -7,13 +7,16 @@ authors = [
     { name = "MervinPraison" }
 ]
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license = "MIT"
 dependencies = ["praisonai-svc>=1.0.0"]
 
 [project.urls]
-Homepage = "https://github.com/praisonai/praisonai-svc"
-Repository = "https://github.com/praisonai/praisonai-svc"
+Homepage = "https://github.com/MervinPraison/PraisonAI-SVC"
+Repository = "https://github.com/MervinPraison/PraisonAI-SVC"
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = []
