@@ -87,6 +87,56 @@ curl http://localhost:8080/jobs/{job_id}
 curl http://localhost:8080/jobs/{job_id}/download
 ```
 
+## Local Testing
+
+Test locally in 4 simple steps:
+
+### 1. Install
+
+```bash
+pip install praisonai-svc
+```
+
+### 2. Create Service
+
+```bash
+praisonai-svc new my-service
+cd my-service
+```
+
+### 3. Set Up Azure (Choose One)
+
+**Option A: Local Testing (No Azure Account)**
+```bash
+# Install and start Azurite
+npm install -g azurite
+azurite --silent
+
+# Use this in .env:
+PRAISONAI_AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
+```
+
+**Option B: Real Azure**
+```bash
+# Get from Azure Portal → Storage Account → Access Keys
+PRAISONAI_AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=https;..."
+```
+
+### 4. Run & Test
+
+```bash
+# Start service
+python handlers.py
+
+# Test (in another terminal)
+curl http://localhost:8080/health
+curl -X POST http://localhost:8080/jobs \
+  -H "Content-Type: application/json" \
+  -d '{"payload": {"title": "Test"}}'
+```
+
+That's it! ✅
+
 ## Architecture
 
 ```
@@ -250,12 +300,161 @@ praisonai-svc/
 
 ### CLI Commands
 
+#### `praisonai-svc new <name>`
+
+**Purpose:** Create a new service from template
+
+**Usage:**
 ```bash
-praisonai-svc new <name>      # Create new service
-praisonai-svc run              # Run locally
-praisonai-svc deploy           # Deploy to Azure
-praisonai-svc logs             # Tail logs
+praisonai-svc new my-service
+# or with package integration
+praisonai-svc new my-service --package praisonaippt
 ```
+
+**What it does:**
+1. Creates a new directory with your service name
+2. Generates `handlers.py` with ServiceApp boilerplate
+3. Creates `.env.example` with required configuration
+4. Creates `README.md` with setup instructions
+5. Generates `pyproject.toml` with dependencies
+
+**Output:**
+```
+✅ Service created: my-service/
+   ├── handlers.py
+   ├── .env.example
+   ├── README.md
+   └── pyproject.toml
+```
+
+**Next steps after creation:**
+```bash
+cd my-service
+cp .env.example .env
+# Edit .env with your Azure credentials
+# Edit handlers.py to implement your logic
+```
+
+---
+
+#### `praisonai-svc run`
+
+**Purpose:** Run the service locally for development
+
+**Usage:**
+```bash
+cd my-service
+praisonai-svc run
+```
+
+**What it does:**
+1. Loads environment variables from `.env`
+2. Starts FastAPI server on `http://localhost:8080`
+3. Starts worker process for job processing
+4. Enables hot-reload for development
+
+**Output:**
+```
+INFO:     Started server process [12345]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8080
+```
+
+**Test it:**
+```bash
+# Health check
+curl http://localhost:8080/health
+
+# Create a job
+curl -X POST http://localhost:8080/jobs \
+  -H "Content-Type: application/json" \
+  -d '{"payload": {"title": "Test"}}'
+```
+
+---
+
+#### `praisonai-svc deploy`
+
+**Purpose:** Deploy service to Azure Container Apps
+
+**Usage:**
+```bash
+cd my-service
+praisonai-svc deploy
+```
+
+**What it does:**
+1. Validates Azure CLI is installed and authenticated
+2. Builds Docker image from your service
+3. Pushes image to Azure Container Registry
+4. Creates/updates Azure Container App
+5. Configures environment variables
+6. Sets up scaling rules (min 0, max 3 replicas)
+
+**Prerequisites:**
+- Azure CLI installed: `brew install azure-cli`
+- Logged in: `az login`
+- Resource group and container registry created
+
+**Output:**
+```
+🔨 Building Docker image...
+✅ Image built: myregistry.azurecr.io/my-service:latest
+
+📤 Pushing to Azure Container Registry...
+✅ Image pushed
+
+🚀 Deploying to Azure Container Apps...
+✅ Deployed: https://my-service.azurecontainerapps.io
+
+📊 Service URL: https://my-service.azurecontainerapps.io
+```
+
+**What happens:**
+- Service is deployed with scale-to-zero (no cost when idle)
+- Auto-scales based on HTTP requests (0-3 replicas)
+- Environment variables from `.env` are configured
+- HTTPS endpoint is automatically provisioned
+
+---
+
+#### `praisonai-svc logs`
+
+**Purpose:** View real-time logs from deployed service
+
+**Usage:**
+```bash
+cd my-service
+praisonai-svc logs
+
+# Follow logs (like tail -f)
+praisonai-svc logs --follow
+
+# Show last 100 lines
+praisonai-svc logs --tail 100
+```
+
+**What it does:**
+1. Connects to Azure Container Apps
+2. Streams application logs in real-time
+3. Shows both API and worker logs
+4. Displays timestamps and log levels
+
+**Output:**
+```
+2025-11-04 21:00:15 INFO  [API] Started server
+2025-11-04 21:00:20 INFO  [API] POST /jobs - 201 Created
+2025-11-04 21:00:21 INFO  [Worker] Processing job abc123
+2025-11-04 21:00:25 INFO  [Worker] Job abc123 completed
+2025-11-04 21:00:26 INFO  [API] GET /jobs/abc123 - 200 OK
+```
+
+**Useful for:**
+- Debugging production issues
+- Monitoring job processing
+- Tracking API requests
+- Identifying errors
 
 ## Testing
 
