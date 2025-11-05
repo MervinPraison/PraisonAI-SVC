@@ -22,7 +22,7 @@ class ServiceConfig(BaseSettings):
     # Job settings
     max_job_duration_minutes: int = 10
     max_retry_count: int = 3
-    queue_visibility_timeout: int = 60
+    queue_visibility_timeout: int = 5  # Seconds message is invisible while processing
 
     # API settings
     api_key: str | None = None

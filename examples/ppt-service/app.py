@@ -1,4 +1,4 @@
-"""Example PPT service handler."""
+"""Example PPT service application."""
 
 
 from praisonai_svc import ServiceApp

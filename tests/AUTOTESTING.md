@@ -21,7 +21,7 @@ cd /path/to/praisonai-svc
 rm -rf temp/test-* temp/fresh-*
 
 # 3. Kill any running processes
-pkill -9 -f "python handlers.py"
+pkill -9 -f "python app.py"
 pkill -9 -f azurite
 lsof -ti:8080 | xargs kill -9 2>/dev/null || true
 lsof -ti:8081 | xargs kill -9 2>/dev/null || true
@@ -48,8 +48,8 @@ python -c "from praisonai_svc import ServiceApp; print('✓ Package installed')"
 ### Phase 3: Start Azurite (Local Azure Emulator)
 
 ```bash
-# 6. Start Azurite in background
-azurite --silent &
+# 6. Start Azurite in background (redirect output to avoid blocking)
+azurite --silent > /dev/null 2>&1 &
 
 # 7. Wait for Azurite to start
 sleep 3
@@ -59,6 +59,8 @@ curl -s http://127.0.0.1:10000/devstoreaccount1?comp=list > /dev/null && echo "�
 ```
 
 **Expected Result:** Azurite services listening on ports 10000 (Blob), 10001 (Queue), 10002 (Table).
+
+**Note:** The `> /dev/null 2>&1 &` ensures Azurite runs in background without blocking your terminal.
 
 ---
 
@@ -73,9 +75,9 @@ praisonai-svc new auto-test
 cd auto-test
 ```
 
-**Expected Result:** Service directory created with `handlers.py`, `.env.example`, `README.md`.
+**Expected Result:** Service directory created with `app.py`, `.env.example`, `README.md`.
 
-**VERIFY:** Check that `handlers.py` contains:
+**VERIFY:** Check that `app.py` contains:
 - ✅ `from dotenv import load_dotenv`
 - ✅ `load_dotenv()` call
 - ✅ `app.run(host="0.0.0.0", port=8080)` in `__main__`
@@ -99,12 +101,12 @@ EOF
 
 ```bash
 # 12. Verify template has working example (no NotImplementedError)
-grep "title = payload" handlers.py && echo "✓ Template has working example"
+grep "title = payload" app.py && echo "✓ Template has working example"
 ```
 
 **Expected Result:** Template already includes working example code. No editing needed!
 
-**Note:** As of v1.1.0, the template comes with a working example by default. You can test immediately without modifying code.
+**Note:** As of v1.2.0, the template comes with a working example by default. You can test immediately without modifying code.
 
 ---
 
@@ -112,7 +114,7 @@ grep "title = payload" handlers.py && echo "✓ Template has working example"
 
 ```bash
 # 13. Start service in background
-python handlers.py > service.log 2>&1 &
+python app.py > service.log 2>&1 &
 
 # 14. Wait for service to start
 sleep 5
@@ -308,7 +310,7 @@ fi
 
 **Expected Result:** Same job ID returned for identical payloads (idempotency via SHA256 hash).
 
-**Known Issue (v1.1.0):** Idempotency currently not working - returns different IDs. Non-critical, will be fixed in v1.1.1.
+**Known Issue (v1.2.0):** Idempotency currently not working - returns different IDs. Non-critical, will be fixed in future version.
 
 ---
 
@@ -316,7 +318,7 @@ fi
 
 ```bash
 # 29. Stop service
-pkill -f "python handlers.py"
+pkill -f "python app.py"
 
 # 30. Stop Azurite
 pkill -f azurite
@@ -348,7 +350,7 @@ rm -rf temp/auto-test
 
 **Non-critical (nice to have):**
 
-12. ⚠️ Idempotency (same payload = same job ID) - Known issue in v1.1.0
+12. ⚠️ Idempotency (same payload = same job ID) - Known issue in v1.2.0
 
 ---
 
@@ -442,7 +444,7 @@ echo "✅ All tests passed!"
 
 ---
 
-**Last Updated:** 2025-11-04  
-**Framework Version:** 1.1.0  
-**Test Protocol Version:** 1.1  
+**Last Updated:** 2025-11-05  
+**Framework Version:** 1.2.0  
+**Test Protocol Version:** 1.2  
 **Test Results:** 11/11 critical tests passing (idempotency is non-critical)

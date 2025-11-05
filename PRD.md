@@ -15,7 +15,7 @@ Run all PraisonAI generators (e.g., PraisonAIPPT, PraisonAIVideo, PraisonAIWP) a
 
 | # | Goal                      | Explanation                                                              |
 | - | ------------------------- | ------------------------------------------------------------------------ |
-| 1 | One-file service creation | Only a `handlers.py` file per new package.                               |
+| 1 | One-file service creation | Only an `app.py` file per new package.                               |
 | 2 | Minimal Azure footprint   | Uses only ACA + Blob + Storage Queue + Table Storage.                    |
 | 3 | Cost-predictable          | Scale-to-zero, hard-capped replicas, no hidden meters.                   |
 | 4 | WP-native UI              | WordPress chatbot directly posts YAML/JSON to the API (no PHP blocking). |
@@ -783,7 +783,7 @@ async def download_job(job_id: str):
    * Single ACA (two containers) + Blob + Storage Queue + Table.
 4. **Example Service**
 
-   * `praisonai-ppt` repo with `handlers.py`.
+   * `praisonai-ppt` repo with `app.py`.
 5. **WordPress Integration Snippet**
 
    * JS chat widget calling API directly.

@@ -4,7 +4,7 @@ import click
 
 
 @click.group()
-@click.version_option(version="1.1.0")
+@click.version_option(version="1.2.0")
 def main() -> None:
     """PraisonAI Service Framework CLI."""
     pass
@@ -14,33 +14,33 @@ def main() -> None:
 @click.option("--host", default="0.0.0.0", help="Host to bind to")
 @click.option("--port", default=8080, help="Port to bind to")
 def run(host: str, port: int) -> None:
-    """Run the service locally (loads handlers.py)."""
+    """Run the service locally (loads app.py)."""
     import sys
     from pathlib import Path
     
-    # Check if handlers.py exists
-    handlers_file = Path("handlers.py")
-    if not handlers_file.exists():
-        click.echo("❌ Error: handlers.py not found in current directory")
+    # Check if app.py exists
+    app_file = Path("app.py")
+    if not app_file.exists():
+        click.echo("❌ Error: app.py not found in current directory")
         click.echo("Run this command from your service directory")
         sys.exit(1)
     
-    # Load handlers.py and run the app
+    # Load app.py and run the app
     try:
         import importlib.util
-        spec = importlib.util.spec_from_file_location("handlers", handlers_file)
+        spec = importlib.util.spec_from_file_location("app", app_file)
         if spec and spec.loader:
-            handlers = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(handlers)
+            app_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(app_module)
             
-            # Get the app from handlers and run it
-            if hasattr(handlers, 'app'):
-                handlers.app.run(host=host, port=port)
+            # Get the app from app.py and run it
+            if hasattr(app_module, 'app'):
+                app_module.app.run(host=host, port=port)
             else:
-                click.echo("❌ Error: No 'app' found in handlers.py")
+                click.echo("❌ Error: No 'app' found in app.py")
                 sys.exit(1)
     except Exception as e:
-        click.echo(f"❌ Error loading handlers.py: {e}")
+        click.echo(f"❌ Error loading app.py: {e}")
         sys.exit(1)
 
 
@@ -58,8 +58,8 @@ def new(service_name: str, package: str | None) -> None:
 
     # Create directory structure
     service_dir.mkdir()
-    (service_dir / "handlers.py").write_text(
-        f'''"""Handler for {service_name} service."""
+    (service_dir / "app.py").write_text(
+        f'''"""Application for {service_name} service."""
 
 import io
 from dotenv import load_dotenv
@@ -99,17 +99,23 @@ if __name__ == "__main__":
 
     (service_dir / ".env.example").write_text(
         """# Azure Storage Configuration
-PRAISONAI_AZURE_STORAGE_CONNECTION_STRING=your_connection_string_here
-PRAISONAI_AZURE_TABLE_CONN_STRING=  # Optional, defaults to storage connection
-PRAISONAI_AZURE_QUEUE_CONN_STRING=  # Optional, defaults to storage connection
+# For local testing with Azurite (default):
+PRAISONAI_AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
 
-# API Configuration
-PRAISONAI_API_KEY=your_secret_api_key
-PRAISONAI_CORS_ORIGINS=["https://your-wordpress-site.com"]
+# For production, replace with your Azure Storage connection string:
+# PRAISONAI_AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=https;AccountName=your_account;AccountKey=your_key;EndpointSuffix=core.windows.net"
 
-# Job Settings
-PRAISONAI_MAX_JOB_DURATION_MINUTES=10
-PRAISONAI_MAX_RETRY_COUNT=3
+# Optional: Separate connection strings (defaults to PRAISONAI_AZURE_STORAGE_CONNECTION_STRING)
+# PRAISONAI_AZURE_TABLE_CONN_STRING=
+# PRAISONAI_AZURE_QUEUE_CONN_STRING=
+
+# API Configuration (optional)
+# PRAISONAI_API_KEY=your_secret_api_key
+# PRAISONAI_CORS_ORIGINS=["https://your-wordpress-site.com"]
+
+# Job Settings (optional, these are defaults)
+# PRAISONAI_MAX_JOB_DURATION_MINUTES=10
+# PRAISONAI_MAX_RETRY_COUNT=3
 """
     )
 
@@ -128,12 +134,13 @@ uv pip install praisonai-svc{' ' + package if package else ''}
 2. Configure environment:
 ```bash
 cp .env.example .env
-# Edit .env with your Azure credentials
+# .env is pre-configured for local testing with Azurite
+# For production, edit .env with your Azure credentials
 ```
 
 3. Run locally:
 ```bash
-python handlers.py
+python app.py
 ```
 
 4. Test the API:
@@ -153,9 +160,10 @@ See [deployment guide](https://docs.praisonai.com/svc/deployment) for Azure Cont
     click.echo(f"📁 Directory: {service_dir.absolute()}")
     click.echo("\nNext steps:")
     click.echo(f"  cd {service_name}")
-    click.echo("  # Edit handlers.py to implement your job logic")
-    click.echo("  # Configure .env with Azure credentials")
-    click.echo("  python handlers.py")
+    click.echo("  cp .env.example .env  # Already configured for local testing!")
+    click.echo("  python app.py         # Start service (API + Worker)")
+    click.echo("\n💡 Tip: .env is pre-configured for Azurite (local testing)")
+    click.echo("    For production, edit .env with your Azure credentials")
 
 
 @main.command()

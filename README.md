@@ -4,7 +4,7 @@ A unified framework that turns any PraisonAI Python package into a web service o
 
 ## Features
 
-✅ **One-file service creation** - Only a `handlers.py` file needed  
+✅ **One-file service creation** - Only an `app.py` file needed  
 ✅ **Azure-native** - Uses Container Apps, Blob Storage, Queue, Table Storage  
 ✅ **Cost-predictable** - Scale-to-zero, hard-capped replicas (£15-25/month)  
 ✅ **Production-ready** - Retry logic, idempotency, monitoring  
@@ -30,9 +30,9 @@ praisonai-svc new my-service
 cd my-service
 ```
 
-### Implement Your Handler
+### Implement Your Application
 
-Edit `handlers.py` - replace the `NotImplementedError` with your logic:
+Edit `app.py` - customize the job processing logic:
 
 ```python
 from dotenv import load_dotenv
@@ -69,10 +69,10 @@ PRAISONAI_AZURE_STORAGE_CONNECTION_STRING=your_connection_string
 PRAISONAI_API_KEY=your_secret_key
 ```
 
-### Run Locally
+### Run the Service
 
 ```bash
-python handlers.py
+python app.py
 ```
 
 ### Test the API
@@ -132,7 +132,7 @@ PRAISONAI_AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=https;..."
 
 ```bash
 # Start service
-python handlers.py
+python app.py
 
 # Test (in another terminal)
 curl http://localhost:8080/health
@@ -262,6 +262,30 @@ ruff check src/ --fix
 mypy src/
 ```
 
+### Version Management
+
+When incrementing the version, update these files:
+
+1. **`pyproject.toml`** - Line 3: `version = "X.Y.Z"`
+2. **`src/praisonai_svc/cli.py`** - Line 7: `@click.version_option(version="X.Y.Z")`
+3. **`tests/AUTOTESTING.md`** - Lines 445-447: Update version references
+
+**Version numbering (Semantic Versioning):**
+- **Patch (X.Y.Z)** - Bug fixes only: `1.2.0` → `1.2.1`
+- **Minor (X.Y.0)** - New features, backward compatible: `1.2.0` → `1.3.0`
+- **Major (X.0.0)** - Breaking changes: `1.2.0` → `2.0.0`
+
+**Example:**
+```bash
+# For a new feature (minor version bump)
+# 1. Update pyproject.toml: version = "1.3.0"
+# 2. Update cli.py: @click.version_option(version="1.3.0")
+# 3. Update AUTOTESTING.md: Framework Version: 1.3.0
+# 4. Commit and tag
+git commit -am "Bump version to 1.3.0"
+git tag v1.3.0
+```
+
 ## Project Structure
 
 ```
@@ -316,7 +340,7 @@ praisonai-svc new my-service --package praisonaippt
 
 **What it does:**
 1. Creates a new directory with your service name
-2. Generates `handlers.py` with ServiceApp boilerplate
+2. Generates `app.py` with ServiceApp boilerplate
 3. Creates `.env.example` with required configuration
 4. Creates `README.md` with setup instructions
 5. Generates `pyproject.toml` with dependencies
@@ -324,7 +348,7 @@ praisonai-svc new my-service --package praisonaippt
 **Output:**
 ```
 ✅ Service created: my-service/
-   ├── handlers.py
+   ├── app.py
    ├── .env.example
    ├── README.md
    └── pyproject.toml
@@ -335,7 +359,7 @@ praisonai-svc new my-service --package praisonaippt
 cd my-service
 cp .env.example .env
 # Edit .env with your Azure credentials
-# Edit handlers.py to implement your logic
+# Edit app.py to implement your logic
 ```
 
 ---

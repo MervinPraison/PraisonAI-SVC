@@ -19,10 +19,7 @@ class QueueManager:
         self.poison_queue_client = QueueClient.from_connection_string(
             config.queue_connection_string, queue_name=config.poison_queue_name
         )
-        self._ensure_queues()
-
-    def _ensure_queues(self) -> None:
-        """Ensure queues exist."""
+        # Create queues synchronously in __init__ (runs in main thread)
         try:
             self.queue_client.create_queue()
         except Exception:
