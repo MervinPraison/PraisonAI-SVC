@@ -1,22 +1,64 @@
 #!/bin/bash
 
 # Performance Testing Script for PraisonAI Service
-# Usage: ./test-performance.sh <APP_URL> [NUM_REQUESTS] [CONCURRENCY]
+# Usage: ./test-performance.sh [APP_URL] [NUM_REQUESTS] [CONCURRENCY]
+#
+# If APP_URL is not provided, will automatically detect from check-azure.sh
 
 set -e
 
-APP_URL="${1}"
-NUM_REQUESTS="${2:-100}"
-CONCURRENCY="${3:-10}"
+# Check if first argument is a URL (starts with http)
+if [[ "$1" =~ ^https?:// ]]; then
+    APP_URL="${1}"
+    NUM_REQUESTS="${2:-100}"
+    CONCURRENCY="${3:-10}"
+else
+    APP_URL=""
+    NUM_REQUESTS="${1:-100}"
+    CONCURRENCY="${2:-10}"
+fi
 
+# Auto-detect APP_URL if not provided
 if [ -z "$APP_URL" ]; then
-    echo "❌ Error: APP_URL required"
+    echo "🔍 No APP_URL provided. Auto-detecting from Azure..."
     echo ""
-    echo "Usage: $0 <APP_URL> [NUM_REQUESTS] [CONCURRENCY]"
+    
+    # Find check-azure.sh script
+    CHECK_SCRIPT="../check-azure.sh"
+    if [ ! -f "$CHECK_SCRIPT" ]; then
+        CHECK_SCRIPT="./check-azure.sh"
+    fi
+    
+    if [ ! -f "$CHECK_SCRIPT" ]; then
+        echo "❌ Error: check-azure.sh not found"
+        echo ""
+        echo "Please provide APP_URL manually:"
+        echo "  $0 <APP_URL> [NUM_REQUESTS] [CONCURRENCY]"
+        echo ""
+        echo "Example:"
+        echo "  $0 https://my-service.azurecontainerapps.io 100 10"
+        exit 1
+    fi
+    
+    # Run check-azure.sh and extract URL
+    TEMP_OUTPUT=$(mktemp)
+    bash "$CHECK_SCRIPT" > "$TEMP_OUTPUT" 2>&1
+    
+    # Extract the first container app URL
+    APP_URL=$(grep "URL:" "$TEMP_OUTPUT" | head -1 | awk '{print $2}')
+    
+    rm -f "$TEMP_OUTPUT"
+    
+    if [ -z "$APP_URL" ]; then
+        echo "❌ No deployed container apps found"
+        echo ""
+        echo "Please deploy a service first or provide APP_URL manually:"
+        echo "  $0 <APP_URL> [NUM_REQUESTS] [CONCURRENCY]"
+        exit 1
+    fi
+    
+    echo "✅ Auto-detected service URL: $APP_URL"
     echo ""
-    echo "Example:"
-    echo "  $0 https://my-service.azurecontainerapps.io 100 10"
-    exit 1
 fi
 
 # Remove trailing slash

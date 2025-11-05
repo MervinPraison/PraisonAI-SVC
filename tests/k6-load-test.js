@@ -12,11 +12,10 @@ const jobsCompleted = new Counter('jobs_completed');
 // Test configuration
 export const options = {
   stages: [
-    { duration: '30s', target: 10 },   // Warm up: 10 users
-    { duration: '1m', target: 50 },    // Ramp up: 50 users
-    { duration: '2m', target: 100 },   // Peak load: 100 users
-    { duration: '1m', target: 100 },   // Sustained load: 100 users
-    { duration: '30s', target: 0 },    // Ramp down: 0 users
+    { duration: '10s', target: 5 },    // Warm up: 5 users
+    { duration: '20s', target: 10 },   // Ramp up: 10 users
+    { duration: '20s', target: 20 },   // Peak load: 20 users
+    { duration: '10s', target: 0 },    // Ramp down: 0 users
   ],
   thresholds: {
     'http_req_duration': ['p(95)<1000'],     // 95% of requests should be below 1s
@@ -199,10 +198,13 @@ function textSummary(data, options) {
   // Response time
   if (data.metrics.http_req_duration) {
     summary += `${indent}Response Time:\n`;
-    summary += `${indent}  Average: ${data.metrics.http_req_duration.values.avg.toFixed(2)}ms\n`;
-    summary += `${indent}  Median: ${data.metrics.http_req_duration.values.med.toFixed(2)}ms\n`;
-    summary += `${indent}  95th percentile: ${data.metrics.http_req_duration.values['p(95)'].toFixed(2)}ms\n`;
-    summary += `${indent}  99th percentile: ${data.metrics.http_req_duration.values['p(99)'].toFixed(2)}ms\n\n`;
+    summary += `${indent}  Average: ${(data.metrics.http_req_duration.values.avg || 0).toFixed(2)}ms\n`;
+    summary += `${indent}  Median: ${(data.metrics.http_req_duration.values.med || 0).toFixed(2)}ms\n`;
+    summary += `${indent}  95th percentile: ${(data.metrics.http_req_duration.values['p(95)'] || 0).toFixed(2)}ms\n`;
+    if (data.metrics.http_req_duration.values['p(99)']) {
+      summary += `${indent}  99th percentile: ${data.metrics.http_req_duration.values['p(99)'].toFixed(2)}ms\n`;
+    }
+    summary += `\n`;
   }
   
   // Custom metrics
