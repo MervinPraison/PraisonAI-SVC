@@ -167,10 +167,83 @@ See [deployment guide](https://docs.praisonai.com/svc/deployment) for Azure Cont
 
 
 @main.command()
-def deploy() -> None:
+@click.option("--resource-group", default=None, help="Azure resource group name (auto-detected if not specified)")
+@click.option("--location", default="eastus", help="Azure region")
+@click.option("--acr-name", default=None, help="Azure Container Registry name (auto-detected if not specified)")
+def deploy(resource_group: str | None, location: str, acr_name: str | None) -> None:
     """Deploy service to Azure Container Apps."""
-    click.echo("🚀 Azure deployment coming soon!")
-    click.echo("For now, see: https://docs.praisonai.com/svc/deployment")
+    import subprocess
+    import sys
+    from pathlib import Path
+    
+    # Check if we're in a service directory
+    if not Path("app.py").exists():
+        click.echo("❌ Error: app.py not found in current directory")
+        click.echo("   Run this command from your service directory")
+        click.echo("   Example: cd my-service && praisonai-svc deploy")
+        sys.exit(1)
+    
+    # Check if Azure CLI is installed
+    try:
+        subprocess.run(["az", "--version"], capture_output=True, check=True)
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        click.echo("❌ Azure CLI not installed")
+        click.echo("   Install: brew install azure-cli")
+        click.echo("   Or visit: https://docs.microsoft.com/cli/azure/install-azure-cli")
+        sys.exit(1)
+    
+    # Check if logged in
+    try:
+        subprocess.run(["az", "account", "show"], capture_output=True, check=True)
+    except subprocess.CalledProcessError:
+        click.echo("❌ Not logged in to Azure")
+        click.echo("   Run: az login")
+        sys.exit(1)
+    
+    click.echo("🚀 Deploying to Azure Container Apps...")
+    click.echo("")
+    
+    # Set environment variables
+    import os
+    os.environ["RESOURCE_GROUP"] = resource_group
+    os.environ["LOCATION"] = location
+    os.environ["ACR_NAME"] = acr_name
+    
+    # Find deploy.sh script - try multiple locations
+    possible_locations = [
+        Path(__file__).parent.parent.parent.parent / "deploy.sh",  # Editable install
+        Path(__file__).parent.parent.parent / "deploy.sh",  # Package install
+        Path("/Users/praison/praisonai-svc/deploy.sh"),  # Absolute path
+    ]
+    
+    deploy_script = None
+    for location in possible_locations:
+        if location.exists():
+            deploy_script = location
+            break
+    
+    if not deploy_script:
+        click.echo("❌ deploy.sh not found")
+        click.echo(f"   Searched: {[str(p) for p in possible_locations]}")
+        click.echo("")
+        click.echo("Manual deployment:")
+        click.echo("   See DEPLOYMENT.md for instructions")
+        sys.exit(1)
+    
+    # Run deployment script
+    try:
+        result = subprocess.run(
+            [str(deploy_script), "."],
+            env=os.environ,
+            check=True
+        )
+        sys.exit(result.returncode)
+    except subprocess.CalledProcessError as e:
+        click.echo(f"❌ Deployment failed with exit code {e.returncode}")
+        sys.exit(e.returncode)
+    except KeyboardInterrupt:
+        click.echo("\n⚠️  Deployment cancelled")
+        sys.exit(1)
 
 
 @main.command()
