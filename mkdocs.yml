@@ -42,3 +42,8 @@ nav:
   - Getting Started:
     - Installation: getting-started/installation.md
     - Deployment: getting-started/deployment.md
+  - Features:
+    - ServiceApp: features/service-app.md
+    - Azure Integration: features/azure.md
+    - CLI Commands: features/cli.md
+    - Reliability: features/reliability.md
