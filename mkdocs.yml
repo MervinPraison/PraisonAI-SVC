@@ -1,0 +1,44 @@
+site_name: PraisonAI SVC
+site_url: https://svc.praison.ai
+site_description: A unified framework that turns any PraisonAI Python package into a web service on Azure
+
+repo_name: MervinPraison/PraisonAI-SVC
+repo_url: https://github.com/MervinPraison/PraisonAI-SVC
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: indigo
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: indigo
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+  features:
+    - navigation.instant
+    - content.code.copy
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight
+  - admonition
+  - tables
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Deployment: getting-started/deployment.md
