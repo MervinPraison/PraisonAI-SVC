@@ -6,7 +6,7 @@ repo_name: MervinPraison/PraisonAI-SVC
 repo_url: https://github.com/MervinPraison/PraisonAI-SVC
 
 theme:
-  name: material
+  name: !ENV [PRAISONAI_THEME, material]
   palette:
     - scheme: slate
       primary: indigo
