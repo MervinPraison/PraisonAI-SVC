@@ -13,7 +13,8 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 try:
-    from jinja2 import Template, Environment, BaseLoader
+    from jinja2 import BaseLoader
+    from jinja2.sandbox import SandboxedEnvironment
     JINJA2_AVAILABLE = True
 except ImportError:
     JINJA2_AVAILABLE = False
@@ -73,8 +74,10 @@ def render_email_template(payload: dict) -> tuple[bytes, str, str]:
     if not template_content:
         raise ValueError("template is required in payload")
     
-    # Create Jinja2 environment
-    env = Environment(loader=BaseLoader())
+    # The template comes from the job payload, so render it in Jinja2's sandbox:
+    # a plain Environment lets a template reach Python internals and run shell
+    # commands. HTML output escapes data values; use |safe to opt out per value.
+    env = SandboxedEnvironment(loader=BaseLoader(), autoescape=(template_type == "html"))
     
     # Render template
     try:
