@@ -1,0 +1,4 @@
+praisonai-svc>=1.2.0
+python-dotenv>=1.0.0
+qrcode[pil]>=7.4.2
+
