@@ -6,8 +6,9 @@ site:
   title: PraisonAI SVC
   ui: shadcn
   theme:
-    preset: indigo
-    darkMode: true
+    preset: paper
+    radius: md
+    mode: system
   description: A unified framework that turns any PraisonAI Python package into a
     web service on Azure
 seo:
