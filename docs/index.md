@@ -1,3 +1,20 @@
+---
+layout: home
+title: PraisonAI SVC
+description: A unified framework that turns any PraisonAI Python package into a web
+  service on Azure
+hero:
+  name: PraisonAI SVC
+  text: PraisonAI SVC
+  tagline: A unified framework that turns any PraisonAI Python package into a web
+    service on Azure
+  actions:
+  - text: Quick start
+    link: getting-started/installation.md
+  - text: View on GitHub
+    link: https://github.com/MervinPraison/PraisonAI-SVC
+    theme: alt
+---
 # PraisonAI SVC
 
 Turn PraisonAI packages into Azure web services.

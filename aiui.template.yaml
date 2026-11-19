@@ -15,28 +15,31 @@ seo:
   siteUrl: https://svc.praison.ai
 navigation:
   tabs:
-  - tab: Home
+  - tab: Docs
     groups:
-    - group: Home
+    - group: Get started
       pages:
       - index
-  - tab: Getting Started
-    groups:
+      icon: rocket
     - group: Getting Started
       pages:
       - getting-started/installation
       - getting-started/deployment
+      icon: rocket
       prefix: getting-started
-  - tab: Features
-    groups:
     - group: Features
       pages:
       - features/service-app
       - features/azure
       - features/cli
       - features/reliability
+      icon: book-open
       prefix: features
 navbar:
+  primary:
+    type: button
+    label: Quick start
+    href: /docs/getting-started/installation
   links:
   - label: GitHub
     href: https://github.com/MervinPraison/PraisonAI-SVC
@@ -52,6 +55,8 @@ content:
     include:
     - '**/*.md'
     - '**/*.mdx'
+    nav:
+      mode: manual
 templates:
   docs:
     layout: ThreeColumnLayout
